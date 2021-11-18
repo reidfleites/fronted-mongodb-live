@@ -6,7 +6,7 @@ import { RiDeleteBin6Line } from 'react-icons/ri';
 function App() {
 	const [users, setUsers] = useState([]);
 
-	const backendUrl = 'http://localhost:8080'
+	const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
 	const loadUsers = async () => {
 		const response = await fetch(backendUrl);
