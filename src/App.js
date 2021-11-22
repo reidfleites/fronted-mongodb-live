@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from 'react';
 import './App.scss';
 import { GrEdit } from 'react-icons/gr';
@@ -17,7 +18,7 @@ function App() {
 
 	useEffect(() => {
 		loadUsers();
-	}, []);
+	},[]);
 
 	const handleDeleteButton = async (user) => {
 		await fetch(`${backendUrl}/deleteuser/${user._id}`, { method: 'DELETE' });
