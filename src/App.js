@@ -6,6 +6,11 @@ import { RiDeleteBin6Line } from 'react-icons/ri';
 
 function App() {
 	const [users, setUsers] = useState([]);
+	const [formUsername, setFormUsername] = useState('');
+	const [isAddingUser, setIsAddingUser] = useState(false);
+	const [formName, setFormName] = useState('');
+	
+	const [formEmail, setFormEmail] = useState('');
 
 	const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
@@ -24,6 +29,13 @@ function App() {
 		await fetch(`${backendUrl}/deleteuser/${user._id}`, { method: 'DELETE' });
 		loadUsers();
 	}
+	const handleToggleAddUserArea = () => {
+		setIsAddingUser(!isAddingUser);
+	}
+
+	const handleFormUsername = (e) => {
+		setFormUsername(e.target.value);
+	}
 
 	const handleEditButton = (user) => {
 		user.isEditingEmail = !user.isEditingEmail;
@@ -39,6 +51,25 @@ function App() {
 		user.email = e.target.value;
 		setUsers([...users]);
 	}
+	const handleFormName = (e) => {
+		setFormName(e.target.value);
+	}
+
+	const handleFormEmail = (e) => {
+		setFormEmail(e.target.value);
+	}
+	const clearForm = () => {
+		setFormName('');
+		setFormUsername('');
+		setFormEmail('');
+	}
+
+	const handleCancelAddForm = (e) => {
+		e.preventDefault();
+		clearForm();
+		setIsAddingUser(!isAddingUser);
+	}
+
 
 	const handleEmailSave = async (user) => {
 			await fetch(`${backendUrl}/edituser/${user._id}`, {
@@ -51,11 +82,68 @@ function App() {
 			loadUsers();
 	}
 
+	const handleFormSaveButton = (e) => {
+		e.preventDefault();
+		(async () => {
+			await fetch(`${backendUrl}/adduser`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					user: {
+						name: formName,
+						username: formUsername,
+						email: formEmail
+					}
+				})
+			});
+			clearForm();
+			setIsAddingUser(false);
+			loadUsers();
+		})();
+	}
+
 	return (
 		<div className="App">
 			<h1>User Management App</h1>
-			<div className="topRow">
-				<button>Add User</button>
+			<div className="addUserArea">
+				<div className="topInfoRow">
+					<button onClick={handleToggleAddUserArea}>Add User</button>
+					<div className="totalInfo">Total: {users.length} users</div>
+				</div>
+				{isAddingUser && (
+					<div className="addUserFormArea">
+						<form>
+							<div className="row">
+								<label htmlFor="name">Full Name: </label>
+								<input type="text"
+									value={formName}
+									onChange={handleFormName}
+									id="name" />
+							</div>
+
+							<div className="row">
+								<label htmlFor="username">User Name: </label>
+								<input type="text"
+									value={formUsername}
+									onChange={handleFormUsername}
+									id="username" />
+							</div>
+
+							<div className="row">
+								<label htmlFor="email">Email: </label>
+								<input type="text"
+									value={formEmail}
+									onChange={handleFormEmail}
+									id="email" />
+							</div>
+
+							<div className="formButtonArea">
+								<button onClick={(e) => handleFormSaveButton(e)}>Save New User</button>
+								<button onClick={handleCancelAddForm}>Cancel</button>
+							</div>
+						</form>
+					</div>
+				)}
 			</div>
 			<section className="users">
 				{users.map((user, index) => {
